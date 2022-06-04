@@ -30,9 +30,6 @@ async function run() {
     try {
         await client.connect();
 
-
-
-
     }
     finally {
 
