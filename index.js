@@ -28,6 +28,40 @@ async function run() {
     try {
         await client.connect();
 
+
+        const eventCollection = client.db("eventHandler").collection("event");
+
+        app.get('/api/v3/app', async (req, res) => {
+            const uid = req.query.uid;
+            const query = { uid: uid };
+            const result = await eventCollection.findOne(query);
+            res.send(result);
+        })
+
+        app.get('/api/v3/app/eventCount', async (req, res) => {
+            const count = await eventCollection.estimatedDocumentCount();
+            res.send({ count });
+        })
+
+
+        app.get('/api/v3/app/latestEvents', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const query = {};
+            const cursor = eventCollection.find(query);
+            const result = await cursor.skip(page * 5).limit(5).toArray();
+            const reversedResult = result.reverse();
+            // const events = .reversedResult;
+            res.send(reversedResult);
+        })
+
+        app.delete('/api/v3/app/:uid', async (req, res) => {
+            const uid = req.params.uid;
+            const query = { uid: uid };
+            const result = await eventCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
     }
     finally {
 
