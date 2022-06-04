@@ -61,6 +61,35 @@ async function run() {
             res.send(result);
         })
 
+        app.post('/api/v3/app/newEvent', async (req, res) => {
+            const newEvent = req.body;
+            const result = await eventCollection.insertOne(newEvent);
+            res.send(result);
+        })
+
+        app.put('/api/v3/app/updateEvent', async (req, res) => {
+            const id = req.query.uid;
+            const { type, uid, name, tagline, schedule, description, image, moderator, category, sub_category, rigor_rank } = req.body;
+            const filter = { uid: id };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    type: type,
+                    uid: uid,
+                    name: name,
+                    tagline: tagline,
+                    schedule: schedule,
+                    description: description,
+                    image: image,
+                    moderator: moderator,
+                    category: category,
+                    sub_category: sub_category,
+                    rigor_rank: rigor_rank
+                }
+            };
+            const result = await eventCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        })
 
     }
     finally {
